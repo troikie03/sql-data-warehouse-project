@@ -1,26 +1,18 @@
 /*========================================================================================
 
-						        C R E A T I N G   S T O R E D   P R O C E D U R E
-                          Load Silver Layer: Bronze -> Silver
+						C R E A T I N G   S T O R E D   P R O C E D U R E
+
 ========================================================================================*/
-/*----------------------------------------------------------------------------------------
-                                S C R I P T   P U R P O S E
-This stored procedure performs the Extract, Load, and Transform (ETL) procedure process
-to populate the 'Silver' schema tables from the 'Bronze' schema
-
-                            A C T I O N S   P E R F O R M E D
--Truncates silver tables
--Inserts transformed and cleaned data from 'Bronze' into 'Silver' tables
-
-                                  P A R A M E T E R S
-None; This stored procedure does not accept any parameters or return any values
-
-USAGE EXAMPLE: EXEC silver.load_silver;
-----------------------------------------------------------------------------------------*/
 CREATE OR ALTER PROCEDURE silver.load_silver AS
 BEGIN
+/*========================================================================================
+
+							T R U N C A T I N G   T A B L E S 
+
+========================================================================================*/
+
 ------------------------------------------------------------------------------------------
-									              -- S O U R C E   C R M --
+									-- S O U R C E   C R M --
 
 DECLARE @start_time DATETIME, @end_time DATETIME, @batch_start_time DATETIME, @batch_end_time DATETIME;
 BEGIN TRY
@@ -136,7 +128,7 @@ BEGIN TRY
 	SET @start_time = GETDATE();
 	
 	PRINT '>> Truncating Table: silver.crm_sales_details';
-	TRUNCATE TABLE silver.crm_prd_info;
+	TRUNCATE TABLE silver.crm_sales_details;
 	PRINT '>> Inserting Data Into: silver.crm_sales_details';
 
 	INSERT INTO silver.crm_sales_details
@@ -184,11 +176,11 @@ BEGIN TRY
 	PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' seconds';
 	PRINT '**********************';
 
-              										-- S O U R C E   C R M --
+										-- S O U R C E   C R M --
 	------------------------------------------------------------------------------------------
 
 	------------------------------------------------------------------------------------------
-										              -- S O U R C E   E R P --
+										-- S O U R C E   E R P --
 										
 	----SOURCE ERP: cust_az12, loc_a101, px_cat_g1v2
 	PRINT '--------------------------------------------------';
@@ -199,7 +191,7 @@ BEGIN TRY
 	SET @start_time = GETDATE();
 	
 	PRINT '>> Truncating Table: silver.erp_cust_az12';
-	TRUNCATE TABLE silver.crm_prd_info;
+	TRUNCATE TABLE silver.erp_cust_az12;
 	PRINT '>> Inserting Data Into: silver.erp_cust_az12';
 
 	INSERT INTO silver.erp_cust_az12 (CID, BDATE, GEN)
@@ -229,7 +221,7 @@ BEGIN TRY
 	SET @start_time = GETDATE();
 	
 	PRINT '>> Truncating Table: silver.erp_loc_a101';
-	TRUNCATE TABLE silver.crm_prd_info;
+	TRUNCATE TABLE silver.erp_loc_a101;
 	PRINT '>> Inserting Data Into: silver.erp_loc_a101';
 
 	INSERT INTO silver.erp_loc_a101 (CID,CNTRY)
@@ -279,6 +271,6 @@ BEGIN TRY
 		PRINT '==================================================================='
 	END CATCH
 
-									              -- S O U R C E   E R P --
+									-- S O U R C E   E R P --
 ------------------------------------------------------------------------------------------
 END
